@@ -3,9 +3,10 @@
 
 #include <pthread.h>
 #include <queue>
-#include <optional>
 
+#include "helpers.h"
 #include "queue_element.h"
+#include "../MapReduceIntermediary/map_containers.h"
 
 class SharedResources{
 public:
@@ -13,7 +14,8 @@ public:
 	~SharedResources();
 	void WaitOnSharedBarrier();
 	void AddTaskToQueue(queue_element_t element);
-	std::optional<queue_element_t> GetTask();
+	optional<queue_element_t> GetTask();
+	SharedMapContainers &getSharedContainers();
 private:
     unsigned num_mappers, num_reducers;
 
@@ -25,6 +27,9 @@ private:
 
 	// Mutex for synchronising
 	pthread_mutex_t map_queue_mutex;
+
+	// Container for intermediary results between map and reduce
+	SharedMapContainers shared_containers;
 };
 
 #endif /*  __TEMA1__SRC__RESOURCES__  */
