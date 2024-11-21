@@ -9,9 +9,11 @@
 
 struct queue_element_t {
 	std::string filename;
+
 	unsigned file_id;
 
-	queue_element_t(std::string filename, unsigned file_id_):
+	queue_element_t() {};
+	queue_element_t(std::string filename, unsigned file_id_) :
 	filename(filename), file_id(file_id_) {};
 };
 

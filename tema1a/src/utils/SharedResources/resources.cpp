@@ -24,15 +24,18 @@ void SharedResources::AddTaskToQueue(queue_element_t element) {
 	map_workers_queue.push(element);
 }
 
-std::optional<queue_element_t> SharedResources::GetTask() {
+optional<queue_element_t> SharedResources::GetTask() {
 	pthread_mutex_lock(&map_queue_mutex);
 	if (map_workers_queue.empty()) {
 		pthread_mutex_unlock(&map_queue_mutex);
-		return std::nullopt;
+		return optional<queue_element_t>();
 	} else {
-		auto ans = std::make_optional<>(map_workers_queue.front());
+		auto ans = optional<queue_element_t>(map_workers_queue.front());
 		map_workers_queue.pop();
 		pthread_mutex_unlock(&map_queue_mutex);
 		return ans;
 	}
+}
+SharedMapContainers& SharedResources::getSharedContainers() {
+	return static_cast<SharedMapContainers &>(shared_containers);
 }

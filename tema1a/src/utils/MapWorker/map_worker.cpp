@@ -5,16 +5,18 @@
 #include <unordered_set>
 
 #include "map_worker.h"
-#include "../SharedResources/resources.h"
+// #include "helpers.h"
+#include "SharedResources/resources.h"
 
 #define NUM_LETTERS ((unsigned)('z' - 'a' + 1))
 
-using std::vector, std::unordered_set;
+using std::vector;
+using std::unordered_set;
 
 std::string normalise_word(std::string word) {
 	std::string ans = "";
 	for (const auto &c: word) {
-		if (!isalnum(c)) continue;
+		if (!isalpha(c)) continue;
 		if (c >= 'A' && c <= 'Z') {
 			ans += c - 'A' + 'a';
 		} else {
@@ -29,6 +31,8 @@ void map_loop(SharedResources * resources, std::string filename, unsigned id) {
 	if (!fin.is_open()) {
 		std::cerr << "File " << filename << "does not exists\n";
 		exit(1);
+	} else {
+//		std::cout << "Reading from " << filename << "\n";
 	}
 
 	/**
@@ -41,24 +45,27 @@ void map_loop(SharedResources * resources, std::string filename, unsigned id) {
 	 * and we can reduce work for reducers in searching words starting
 	 * with a certain letter
 	 * */
-	vector<vector<std::pair<std::string, unsigned>>> containers
-	(
-		NUM_LETTERS, std::vector<std::pair<std::string, unsigned>>()
-	);
+	MapContainers localContainers;
 
 	std::string word;
 	while (fin >> word) {
 		word = normalise_word(word);
-		if (word.empty()) continue;
-		containers[word[0] - 'a'].emplace_back(word, id);
+		localContainers.AddWordFromFile(word, id);
 	}
 	fin.close();
+
+//	std::cout << "Done reading from file " << filename << "\n";
+
+	SharedMapContainers &sharedContainers = resources->getSharedContainers();
+	for (unsigned i = 0; i < NUM_LETTERS; i++) {
+		sharedContainers.ConcatenateContainersOnLetter(localContainers.getContainer(i), i);
+	}
 }
 
 void* mapper_run(void * arg) {
 	auto *resources = (SharedResources *)arg;
 
-	std::optional<queue_element_t> elem_opt;
+	optional<queue_element_t> elem_opt;
 	while (elem_opt = resources->GetTask() ,
 			elem_opt.has_value()) {
 		auto elem = elem_opt.value();
