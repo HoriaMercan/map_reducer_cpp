@@ -1,11 +1,10 @@
 #include <fstream>
 #include <iostream>
-
 #include <vector>
 #include <unordered_set>
 
 #include "map_worker.h"
-// #include "helpers.h"
+#include "helpers.h"
 #include "SharedResources/resources.h"
 
 #define NUM_LETTERS ((unsigned)('z' - 'a' + 1))
@@ -13,6 +12,11 @@
 using std::vector;
 using std::unordered_set;
 
+/**
+ * Erase all non alphabetic characters
+ * and consider only non capitalized 
+ * English letters
+ */
 std::string normalise_word(std::string word) {
 	std::string ans = "";
 	for (const auto &c: word) {
@@ -31,8 +35,6 @@ void map_loop(SharedResources * resources, std::string filename, unsigned id) {
 	if (!fin.is_open()) {
 		std::cerr << "File " << filename << "does not exists\n";
 		exit(1);
-	} else {
-//		std::cout << "Reading from " << filename << "\n";
 	}
 
 	/**
@@ -54,14 +56,24 @@ void map_loop(SharedResources * resources, std::string filename, unsigned id) {
 	}
 	fin.close();
 
-//	std::cout << "Done reading from file " << filename << "\n";
-
+	/**
+	 * Thread-Safe passing of the local containers created
+	 * for the pairs {word, fileID} to the shared ones.
+	 * The sync is made considering each letter of the
+	 * alphabet.
+	 */
 	SharedMapContainers &sharedContainers = resources->getSharedContainers();
 	for (unsigned i = 0; i < NUM_LETTERS; i++) {
-		sharedContainers.ConcatenateContainersOnLetter(localContainers.getContainer(i), i);
+		sharedContainers
+			.ConcatenateContainersOnLetter(
+				localContainers.getContainer(i), i);
 	}
 }
 
+
+/**
+ * General structure of a map worker function
+ */
 void* mapper_run(void * arg) {
 	auto *resources = (SharedResources *)arg;
 

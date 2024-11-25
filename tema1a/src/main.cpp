@@ -1,11 +1,10 @@
 #include <iostream>
 #include <fstream>
-
 #include <pthread.h>
 
-#include "utils/SharedResources/resources.h"
-#include "utils/MapWorker/map_worker.h"
-#include "utils/ReduceWorker/reduce_worker.h"
+#include "SharedResources/resources.h"
+#include "MapWorker/map_worker.h"
+#include "ReduceWorker/reduce_worker.h"
 
 int main(int argc, const char *argv[]) {
     unsigned M, R;
@@ -34,11 +33,9 @@ int main(int argc, const char *argv[]) {
 	}
 	fin.close();
 	auto *threads = new pthread_t[M + R];
-	for (unsigned i = 0; i < M; i++) {
-		pthread_create(&threads[i], nullptr, mapper_run, &resources);
-	}
-	for (unsigned i = 0; i < R; i++) {
-		pthread_create(&threads[i + M], nullptr, reducer_run, &resources);
+	for (unsigned i = 0; i < M + R; i++) {
+		auto func = i < M ? mapper_run : reducer_run;
+		pthread_create(&threads[i], nullptr, func, &resources);
 	}
 
 

@@ -32,7 +32,7 @@ SharedMapContainers::~SharedMapContainers() {
 	pthread_mutex_destroy(&get_container_mutex);
 }
 
-void MapContainers::AddWordFromFile(std::string word, unsigned int id) {
+void MapContainers::AddWordFromFile(const std::string &word, unsigned int id) {
 	if (word.empty()) return;
 	containers[word[0] - 'a'].push_back(std::make_pair(word, id));
 }
@@ -52,14 +52,13 @@ Container_t &MapContainers::getContainer(unsigned int index) {
 optional<std::pair<Container_t, unsigned>> SharedMapContainers::getNextContainer() {
 	pthread_mutex_lock(&get_container_mutex);
 	if (next_letter == __NUM_LETTERS) {
-		auto a = optional<std::pair<Container_t, unsigned>>();
 		pthread_mutex_unlock(&get_container_mutex);
-		return a;
+		return optional<std::pair<Container_t, unsigned>>();
 	}
-	auto letter = next_letter;
-	auto &a = containers[next_letter++];
+	auto letter = next_letter++;
 
 	pthread_mutex_unlock(&get_container_mutex);
+	auto &a = containers[letter];
 
 	auto pair = std::make_pair(a, letter);
 	return optional<std::pair<Container_t, unsigned>>(pair);

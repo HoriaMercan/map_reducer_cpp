@@ -11,7 +11,6 @@ SharedResources::SharedResources(unsigned num_mappers_, unsigned num_reducers_):
 
 SharedResources::~SharedResources()
 {
-	std::cout << "Destroying shared resources...\n";
 	pthread_barrier_destroy(&barrier);
 	pthread_mutex_destroy(&map_queue_mutex);
 }
@@ -28,7 +27,7 @@ optional<queue_element_t> SharedResources::GetTask() {
 	pthread_mutex_lock(&map_queue_mutex);
 	if (map_workers_queue.empty()) {
 		pthread_mutex_unlock(&map_queue_mutex);
-		return optional<queue_element_t>();
+		return optional<queue_element_t>();  // <=> std::nullopt
 	} else {
 		auto ans = optional<queue_element_t>(map_workers_queue.front());
 		map_workers_queue.pop();

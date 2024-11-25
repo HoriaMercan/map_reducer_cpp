@@ -11,10 +11,16 @@
 class SharedResources{
 public:
     SharedResources(unsigned num_mappers_, unsigned num_reducers_);
+
 	~SharedResources();
+
 	void WaitOnSharedBarrier();
+
 	void AddTaskToQueue(queue_element_t element);
+
+	// Thread-safe retrieval of a file info to be analysed by a mapper
 	optional<queue_element_t> GetTask();
+
 	SharedMapContainers &getSharedContainers();
 private:
     unsigned num_mappers, num_reducers;

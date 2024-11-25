@@ -5,6 +5,11 @@
 #ifndef __TEMA1__SRC__HELPERS_H__
 #define __TEMA1__SRC__HELPERS_H__
 
+/**
+ * Self made optional class since the Docker
+ * uses c++11 and I cannot use std::optional
+*/
+
 template<typename T>
 class optional {
 public:
@@ -29,4 +34,4 @@ bool optional<T>::has_value() const {return _has_value;}
 template <typename T>
 T optional<T>::value() const {return static_cast<T>(_value);}
 
-#endif /*  __TEMA1__SRC__HELPERS_H__  */
+#endif  /*  __TEMA1__SRC__HELPERS_H__  */

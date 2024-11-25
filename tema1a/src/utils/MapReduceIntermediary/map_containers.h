@@ -18,7 +18,7 @@ class MapContainers {
 public:
 	MapContainers();
 
-	void AddWordFromFile(std::string word, unsigned int id);
+	void AddWordFromFile(const std::string &word, unsigned int id);
 
 	Container_t &getContainer(unsigned index);
 
