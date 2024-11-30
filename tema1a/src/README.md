@@ -42,7 +42,7 @@ agrega cuvintele din containerul specific literei.
 ### Organizarea operatiei de Map
 
 Functia `void *mapper_run(void *arg)` reprezinta o structura generala
-a unui thread ce se ocupa cu operatia de Map din cadrul sistemului.
+a unui thread ce se ocupa cu operatii de Map din cadrul sistemului.
 Extragerea urmatorului task se face cu ajutorul functiei GetTask().
 Aceasta returneaza un element de tipul `optional<queue_element_t>`
 (am folosit o implementare self-made a echivalentului clasei std::optional
@@ -55,4 +55,9 @@ local threadului in memoria partajata.
 
 
 ### Organizarea operatiei de Reduce
+Logica generala a unui thread ce se va ocupa cu operatii de tip Reduce
+este descrisa in functia `void *reducer_run(void *)`. In aceasta functie
+se preiau pe rand containerele ce contin toate perechile {cuvant, ID_fisier}
+ce trebuie agregate, sortate si apoi scrise in fisier. Operatiile din urma
+sunt descrise in functia `void reducer_loop(Container_t &, int)`.
 

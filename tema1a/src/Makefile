@@ -1,5 +1,5 @@
 PROJECT=tema1
-SOURCES=utils/helpers.cpp utils/MapWorker/map_worker.cpp \
+SOURCES=utils/MapWorker/map_worker.cpp \
 utils/SharedResources/resources.cpp utils/MapReduceIntermediary/map_containers.cpp \
 utils/ReduceWorker/reduce_worker.cpp
 LIBPATHS=pthread
@@ -13,10 +13,9 @@ CC=g++
 # Automatic generation of some important lists
 OBJECTS=$(SOURCES:.cpp=.o)
 INCFLAGS=$(foreach TMP,$(INCPATHS),-I$(TMP))
-LIBFLAGS=$(foreach TMP,$(LIBPATHS),-L$(TMP))
+LIBFLAGS=$(foreach TMP,$(LIBPATHS),-l$(TMP))
 
-# Set up the output file names for the different output types
-#BINARY=$(PROJECT)
+
 build: all
 all: $(SOURCES) tema1
 
